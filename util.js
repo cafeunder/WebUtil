@@ -10,7 +10,7 @@ function halt(cond){
 
 //値が整数かどうかを判定するメソッド
 function isInteger(x) {
-    return parseInt(x) === x;
+    return Math.round(x) === x;
 }
 
 //配列をディープコピーする関数
