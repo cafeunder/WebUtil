@@ -1,5 +1,18 @@
 ﻿"use strict";
 
+//アサート判定してアラートを出すメソッド
+function halt(cond){
+	if(cond === true){
+		console.assert(false);
+		alert("アサートが発生しました。コンソールを確認してください。");
+	}
+}
+
+//値が整数かどうかを判定するメソッド
+function isInteger(x) {
+    return parseInt(x) === x;
+}
+
 //配列をディープコピーする関数
 function copyArray(arr){
 	if(Array.isArray(arr)){ return null; }
@@ -128,7 +141,7 @@ Point.prototype.equal = function(p){
 	return (this.x == p.x && this.y == p.y);
 }
 
-function DirPoint(p, d, xNum, yNum){
+function dirPoint(p, d, xNum, yNum){
 	switch(d){
 	case POINT_UP:
 		if(p.y-1 >= 0 && p.y-1 < yNum){
