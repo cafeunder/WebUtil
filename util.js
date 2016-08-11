@@ -1,21 +1,30 @@
 ﻿"use strict";
 
-//アサート判定してアラートを出すメソッド
-function halt(cond){
+//継承を表現する関数
+function Inherits(childCtor, parentCtor) {
+  Object.setPrototypeOf(childCtor.prototype, parentCtor.prototype);
+}
+
+//アサート判定してアラートを出す関数
+function halt(cond, message){
 	if(cond === true){
 		console.assert(false);
-		alert("アサートが発生しました。コンソールを確認してください。");
+		if(message == undefined){
+			alert("アサートが発生しました。コンソールを確認してください。");
+		} else {
+			alert("アサートが発生しました。\n" + message);
+		}
 	}
 }
 
-//値が整数かどうかを判定するメソッド
+//値が整数かどうかを判定する関数
 function isInteger(x) {
     return Math.round(x) === x;
 }
 
 //配列をディープコピーする関数
 function copyArray(arr){
-	if(Array.isArray(arr)){ return null; }
+	if(!Array.isArray(arr)){ return null; }
 
 	var newarr = new Array();
 	for(var i = 0; i < arr.length; i++){
@@ -122,12 +131,13 @@ Queue.prototype.debugLog = function(){
 //------------------------------------//
 //                Point               //
 //------------------------------------//
+//上下左右を定義する定数
 var POINT_UP = 0;
 var POINT_RIGHT = 1;
 var POINT_DOWN = 2;
 var POINT_LEFT = 3;
 
-
+//離散空間におけるx,y座標をまとめて管理するクラス
 function Point(x,y){
 	this.x = x;
 	this.y = y;
@@ -137,32 +147,101 @@ Point.prototype.clone = function(){
 	return new Point(this.x, this.y);
 }
 
-Point.prototype.equal = function(p){
+Point.prototype.equals = function(p){
 	return (this.x == p.x && this.y == p.y);
 }
 
-function dirPoint(p, d, xNum, yNum){
+//指定された方向へx,yを書き換えるメソッド
+//xNum, yNumは省略可
+Point.prototype.moveDir = function(d, xNum, yNum){
 	switch(d){
 	case POINT_UP:
-		if(p.y-1 >= 0 && p.y-1 < yNum){
-			return new Point(p.x, p.y-1);
+		if(this.y-1 >= 0){
+			this.y--;
+			return true;
 		}
 		break;
 	case POINT_DOWN:
-		if(p.y+1 >= 0 && p.y+1 < yNum){
-			return new Point(p.x, p.y+1);
+		if(yNum != undefined && this.y+1 < yNum){
+			this.y++;
+			return true;
 		}
 		break;
 	case POINT_LEFT:
-		if(p.x-1 >= 0 && p.x-1 < xNum){
-			return new Point(p.x-1, p.y);
+		if(this.x-1 >= 0){
+			this.x--;
+			return true;
 		}
 		break;
 	case POINT_RIGHT:
-		if(p.x+1 >= 0 && p.x+1 < xNum){
-			return new Point(p.x+1, p.y);
+		if(xNum != undefined && this.x+1 < xNum){
+			this.x++;
+			return true;
+		}
+		break;
+	}
+	return false;
+}
+
+//引数pが自身から見てどの方向にあるかを返すメソッド
+Point.prototype.calcDirectionTo = function(p){
+	var dx = this.x - p.x;
+	var dy = this.y - p.y;
+
+	if(dx == -1 && dy == 0){
+		return POINT_RIGHT;
+	}
+	if(dx == 1 && dy == 0){
+		return POINT_LEFT;
+	}
+	if(dy == -1 && dx == 0){
+		return POINT_DOWN;
+	}
+	if(dy == 1 && dx == 0){
+		return POINT_UP;
+	}
+
+	return null;
+}
+
+//自身から指定された方向を見たときの座標を返すメソッド
+//xNum, yNumは省略可
+Point.prototype.dirPoint = function(d, xNum, yNum){
+	switch(d){
+	case POINT_UP:
+		if(this.y-1 >= 0){
+			return new Point(this.x, this.y-1);
+		}
+		break;
+	case POINT_DOWN:
+		if(yNum != undefined && this.y+1 < yNum){
+			return new Point(this.x, this.y+1);
+		}
+		break;
+	case POINT_LEFT:
+		if(this.x-1 >= 0){
+			return new Point(this.x-1, this.y);
+		}
+		break;
+	case POINT_RIGHT:
+		if(xNum != undefined && this.x+1 < xNum){
+			return new Point(this.x+1, this.y);
 		}
 		break;
 	}
 	return null;
+}
+
+//方向を表す定数を受け取って、反対方向の定数を返すメソッド
+function opposite(dir){
+	switch(dir){
+	case POINT_UP:
+		return POINT_DOWN;
+	case POINT_DOWN:
+		return POINT_UP;
+	case POINT_LEFT:
+		return POINT_RIGHT;
+	case POINT_RIGHT:
+		return POINT_LEFT;
+	}
 }
